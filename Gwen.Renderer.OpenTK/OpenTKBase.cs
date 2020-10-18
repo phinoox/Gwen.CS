@@ -263,7 +263,7 @@ namespace Gwen.Renderer
 
 			System.Drawing.Font sysFont = font.RendererData as System.Drawing.Font;
 
-			if (sysFont == null || Math.Abs(font.RealSize - font.Size * Scale) > 2)
+			if (sysFont == null || Math.Abs(font.RealSize - font.Size * Scale) > 2 || sysFont.OriginalFontName!=font.FaceName)
 			{
 				FreeFont(font);
 				LoadFont(font);
