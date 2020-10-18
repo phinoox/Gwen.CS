@@ -25,5 +25,6 @@ plans:
 
 
 ### Updates
-
+18.10.2020 : Added xsd writing for xml completion with xmlcomplete Visual Studio Code Extension
+17.10.2020 : Upgraded OpenTK to version 4
 14.09.2017 : Port To .Net Core 
