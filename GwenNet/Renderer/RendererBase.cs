@@ -14,6 +14,8 @@ namespace Gwen.Renderer
 		private float m_Scale;
         //protected ICacheToTexture m_RTT;
 
+        private string m_assetDirectory="";
+
 		public float Scale { get { return m_Scale; } set { float oldScale = m_Scale; m_Scale = value; OnScaleChanged(oldScale); } }
 
 		protected virtual void OnScaleChanged(float oldScale)
@@ -178,6 +180,8 @@ namespace Gwen.Renderer
         /// Cache to texture provider.
         /// </summary>
         public virtual ICacheToTexture CTT { get { return null; } }
+
+        public string AssetDirectory { get => m_assetDirectory; set => m_assetDirectory = value; }
 
         /// <summary>
         /// Loads the specified font.

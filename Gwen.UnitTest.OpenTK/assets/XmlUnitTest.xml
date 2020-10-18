@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<Window Name='Window' Position='100, 100' Size='500, 500' MinimumSize='200,200' Padding='6' Title='Xml Window'>
+<Window xmlns="https://github.com/phinoox" Name='Window' Position='100, 100' Size='500, 500' MinimumSize='200,200' Padding='6' Title='Xml Window'>
     <VerticalSplitter>
         <VerticalLayout>
             <Label Text='Label' Font='Arial; 20; Italic; Bold' />

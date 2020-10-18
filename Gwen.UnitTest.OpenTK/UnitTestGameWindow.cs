@@ -176,7 +176,7 @@ namespace Gwen.UnitTest.OTK
             //m_Renderer = new Gwen.Renderer.OpenTK.OpenTKGL10();
             //m_Renderer = new Gwen.Renderer.OpenTK.OpenTKGL20();
             m_Renderer = new Gwen.Renderer.OpenTK.OpenTKGL40();
-
+            m_Renderer.AssetDirectory="assets/";
             m_Skin = new Gwen.Skin.TexturedBase(m_Renderer, "DefaultSkin2.png");
             m_Skin.Colors.TooltipText = new Color(175, 200, 200, 200);
             GetInstalledFontCollection();
@@ -193,7 +193,7 @@ namespace Gwen.UnitTest.OTK
             //    m_Canvas.Scale = 1.5f;
 
             m_UnitTest = new Gwen.UnitTest.UnitTest(m_Canvas);
-
+            this.WindowState = WindowState.Maximized;
             m_Stopwatch.Restart();
             m_LastTime = 0;
         }

@@ -31,12 +31,12 @@ namespace Gwen.Renderer.OpenTK.Input
 
         private void KeyDown(KeyboardKeyEventArgs obj)
         {
-            throw new NotImplementedException();
+           // throw new NotImplementedException();
         }
 
         private void KeyUp(KeyboardKeyEventArgs obj)
         {
-            throw new NotImplementedException();
+           // throw new NotImplementedException();
         }
 
         #endregion

@@ -693,7 +693,7 @@ namespace Gwen.Control
 				int start = StartPoint.X;
 				int end = EndPoint.X;
 
-				str = m_Text[m_CursorPos.Y];
+				str = m_Text[m_CursorPos.Y-1];
 				str = str.Substring(start, end - start);
 			}
 			else

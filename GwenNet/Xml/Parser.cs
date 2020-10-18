@@ -194,6 +194,9 @@ namespace Gwen.Xml
 				{
 					if (m_CurrentElement != null)
 					{
+						//xmlns only for code completion in vs code
+						if(m_Reader.Name=="xmlns")
+						  continue;
 						if (!SetAttributeValue(m_CurrentElement, element, m_Reader.Name, m_Reader.Value))
 							throw new XmlException(String.Format("Attribute '{0}' not found.", m_Reader.Name));
 					}
@@ -515,34 +518,5 @@ namespace Gwen.Xml
 		public readonly static NumberFormatInfo NumberFormatInfo = new NumberFormatInfo() { NumberGroupSeparator = "" };
 		public readonly static char[] ArraySeparator = new char[] { ',' };
 
-		private class ElementDef
-		{
-			public Type Type { get; set; }
-			public ElementHandler Handler { get; set; }
-
-			internal Dictionary<string, MemberInfo> Attributes { get { return m_Attributes; } }
-
-			public ElementDef(Type type, ElementHandler handler)
-			{
-				Type = type;
-				Handler = handler;
 			}
-
-			public void AddAttribute(string name, MemberInfo memberInfo)
-			{
-				m_Attributes[name] = memberInfo;
-			}
-
-			public MemberInfo GetAttribute(string name)
-			{
-				MemberInfo mi;
-				if (m_Attributes.TryGetValue(name, out mi))
-					return mi;
-				else
-					return null;
-			}
-
-			private Dictionary<string, MemberInfo> m_Attributes = new Dictionary<string, MemberInfo>();
-		}
-	}
 }

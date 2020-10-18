@@ -17,6 +17,9 @@ namespace Gwen.Control
 		CategoryList
 	}
 
+/// <summary>
+/// A Border Control
+/// </summary>
 	[Xml.XmlControl]
 	public class Border : ControlBase
 	{

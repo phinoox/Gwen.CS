@@ -335,7 +335,7 @@ namespace Gwen.Renderer
 	    public override void LoadTexture(Texture t){
 	        Bitmap bmp;
 	        try{
-	            bmp = ImageLoader.Load(t.Name);
+	            bmp = ImageLoader.Load(AssetDirectory + t.Name);
 	        }
 	        catch (Exception){
 	            t.Failed = true;

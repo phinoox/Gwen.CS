@@ -23,5 +23,10 @@
     <ProjectReference Include="..\GwenNet.Platform.NetCore\Gwen.Platform.NetCore.csproj" />
     <ProjectReference Include="..\GwenNet\Gwen.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="assets\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
 </Project>

@@ -11,6 +11,7 @@ namespace Gwen.Control
 	/// <summary>
 	/// Base control class.
 	/// </summary>
+	[Xml.XmlControl]
 	public abstract class ControlBase : IDisposable
 	{
 		/// <summary>
