@@ -3,6 +3,9 @@ using Gwen.Control;
 using Gwen.Input;
 using OpenTK.Input;
 using OpenTK;
+using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using OpenTK.Windowing.Common;
 
 namespace Gwen.Renderer.OpenTK.Input
 {
@@ -22,12 +25,23 @@ namespace Gwen.Renderer.OpenTK.Input
         #region Constructors
         public OpenTK(GameWindow window)
         {
-            window.KeyPress += KeyPress;
+            window.KeyDown += KeyDown;
+            window.KeyUp += KeyUp;
+        }
+
+        private void KeyDown(KeyboardKeyEventArgs obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void KeyUp(KeyboardKeyEventArgs obj)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
 
-       #region Methods
+        #region Methods
         public void Initialize(Canvas c)
         {
             m_Canvas = c;
@@ -38,37 +52,37 @@ namespace Gwen.Renderer.OpenTK.Input
         /// </summary>
         /// <param name="key">OpenTK key code.</param>
         /// <returns>GWEN key code.</returns>
-        private Key TranslateKeyCode(global::OpenTK.Input.Key key)
+        private Key TranslateKeyCode(Keys key)
         {
             switch (key)
             {
-                case global::OpenTK.Input.Key.BackSpace: return Key.Backspace;
-                case global::OpenTK.Input.Key.Enter: return Key.Return;
-                case global::OpenTK.Input.Key.KeypadEnter: return Key.Return;
-                case global::OpenTK.Input.Key.Escape: return Key.Escape; 
-                case global::OpenTK.Input.Key.Tab: return Key.Tab;
-                case global::OpenTK.Input.Key.Space: return Key.Space;
-                case global::OpenTK.Input.Key.Up: return Key.Up;
-                case global::OpenTK.Input.Key.Down: return Key.Down;
-                case global::OpenTK.Input.Key.Left: return Key.Left;
-                case global::OpenTK.Input.Key.Right: return Key.Right;
-                case global::OpenTK.Input.Key.Home: return Key.Home;
-                case global::OpenTK.Input.Key.End: return Key.End;
-                case global::OpenTK.Input.Key.Delete: return Key.Delete;
-                case global::OpenTK.Input.Key.LControl:
+                case Keys.Backspace: return Key.Backspace;
+                case Keys.Enter: return Key.Return;
+                case Keys.KeyPadEnter: return Key.Return;
+                case Keys.Escape: return Key.Escape;
+                case Keys.Tab: return Key.Tab;
+                case Keys.Space: return Key.Space;
+                case Keys.Up: return Key.Up;
+                case Keys.Down: return Key.Down;
+                case Keys.Left: return Key.Left;
+                case Keys.Right: return Key.Right;
+                case Keys.Home: return Key.Home;
+                case Keys.End: return Key.End;
+                case Keys.Delete: return Key.Delete;
+                case Keys.LeftControl:
                     this.m_AltGr = true;
                     return Key.Control;
-                case global::OpenTK.Input.Key.LAlt: return Key.Alt;
-                case global::OpenTK.Input.Key.LShift: return Key.Shift;
-                case global::OpenTK.Input.Key.RControl: return Key.Control;
-                case global::OpenTK.Input.Key.RAlt: 
+                case Keys.LeftAlt: return Key.Alt;
+                case Keys.LeftShift: return Key.Shift;
+                case Keys.RightControl: return Key.Control;
+                case Keys.RightAlt:
                     if (this.m_AltGr)
                     {
                         this.m_Canvas.Input_Key(Key.Control, false);
                     }
                     return Key.Alt;
-                case global::OpenTK.Input.Key.RShift: return Key.Shift;
-                
+                case Keys.RightShift: return Key.Shift;
+
             }
             return Key.Invalid;
         }
@@ -78,57 +92,60 @@ namespace Gwen.Renderer.OpenTK.Input
         /// </summary>
         /// <param name="key">OpenTK key code.</param>
         /// <returns>Translated character.</returns>
-        private static char TranslateChar(global::OpenTK.Input.Key key)
+        private static char TranslateChar(Keys key)
         {
-            if (key >= global::OpenTK.Input.Key.A && key <= global::OpenTK.Input.Key.Z)
-                return (char)('a' + ((int)key - (int) global::OpenTK.Input.Key.A));
+            if (key >= Keys.A && key <= Keys.Z)
+                return (char)('a' + ((int)key - (int)Keys.A));
             return ' ';
         }
 
-        public bool ProcessMouseMessage(EventArgs args)
+       
+
+        public bool ProcessMouseWheel(MouseWheelEventArgs ev)
         {
-            if (null == m_Canvas) return false;
-
-            if (args is MouseMoveEventArgs)
-            {
-                MouseMoveEventArgs ev = args as MouseMoveEventArgs;
-                int dx = ev.X - m_MouseX;
-                int dy = ev.Y - m_MouseY;
-
-                m_MouseX = ev.X;
-                m_MouseY = ev.Y;
-
-                return m_Canvas.Input_MouseMoved(m_MouseX, m_MouseY, dx, dy);
-            }
-
-            if (args is MouseButtonEventArgs)
-            {
-                MouseButtonEventArgs ev = args as MouseButtonEventArgs;
-
-				/* We can not simply cast ev.Button to an int, as 1 is middle click, not right click. */
-				int ButtonID = -1; //Do not trigger event.
-
-				if (ev.Button == MouseButton.Left)
-					ButtonID = 0;
-				else if (ev.Button == MouseButton.Right)
-					ButtonID = 1;
-
-				if (ButtonID != -1) //We only care about left and right click for now
-					return m_Canvas.Input_MouseButton(ButtonID, ev.IsPressed);
-            }
-
-            if (args is MouseWheelEventArgs)
-            {
-                MouseWheelEventArgs ev = args as MouseWheelEventArgs;
-                return m_Canvas.Input_MouseWheel(ev.Delta*60);
-            }
-
-            return false;
+            return m_Canvas.Input_MouseWheel((int)ev.OffsetY * 60);
         }
 
-        public bool ProcessKeyDown(EventArgs args)
+        public bool ProcessMouseMove(MouseMoveEventArgs ev)
         {
-            KeyboardKeyEventArgs ev = args as KeyboardKeyEventArgs;
+            m_MouseX = (int)ev.X;
+            m_MouseY = (int)ev.Y;
+            //we have deltaX now for that
+            return m_Canvas.Input_MouseMoved(m_MouseX, m_MouseY, (int)ev.DeltaX, (int)ev.DeltaY);
+        }
+
+        public bool ProcessMouseUp(MouseButtonEventArgs ev)
+        {
+             /* We can not simply cast ev.Button to an int, as 1 is middle click, not right click. */
+                int ButtonID = -1; //Do not trigger event.
+
+                if (ev.Button == MouseButton.Left)
+                    ButtonID = 0;
+                else if (ev.Button == MouseButton.Right)
+                    ButtonID = 1;
+
+                if (ButtonID != -1) //We only care about left and right click for now
+                    return m_Canvas.Input_MouseButton(ButtonID, false);
+                return false;
+        }
+
+        public bool ProcessMouseDown(MouseButtonEventArgs ev)
+        {
+            /* We can not simply cast ev.Button to an int, as 1 is middle click, not right click. */
+                int ButtonID = -1; //Do not trigger event.
+
+                if (ev.Button == MouseButton.Left)
+                    ButtonID = 0;
+                else if (ev.Button == MouseButton.Right)
+                    ButtonID = 1;
+
+                if (ButtonID != -1) //We only care about left and right click for now
+                    return m_Canvas.Input_MouseButton(ButtonID, true);
+                return false;
+        }
+
+        public bool ProcessKeyDown(KeyboardKeyEventArgs ev)
+        {
             char ch = TranslateChar(ev.Key);
 
             if (InputHandler.DoSpecialKeys(m_Canvas, ch))
@@ -144,19 +161,14 @@ namespace Gwen.Renderer.OpenTK.Input
             return m_Canvas.Input_Key(iKey, true);
         }
 
-        public bool ProcessKeyUp(EventArgs args)
+        public bool ProcessKeyUp(KeyboardKeyEventArgs ev)
         {
-            KeyboardKeyEventArgs ev = args as KeyboardKeyEventArgs;
 
             Key iKey = TranslateKeyCode(ev.Key);
 
             return m_Canvas.Input_Key(iKey, false);
         }
 
-        public void KeyPress(object sender, KeyPressEventArgs e)
-        {
-            m_Canvas.Input_Character(e.KeyChar);   
-        }
 
         #endregion
     }

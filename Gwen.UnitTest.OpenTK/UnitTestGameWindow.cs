@@ -11,6 +11,10 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Gwen.UnitTest.OTK
 {
@@ -25,8 +29,8 @@ namespace Gwen.UnitTest.OTK
         private Skin.SkinBase m_Skin;
         private Canvas m_Canvas;
         private UnitTest m_UnitTest;
-		private List<string> defaultFonts = new List<string>();
-		private int _currentFont=0;
+        private List<string> defaultFonts = new List<string>();
+        private int _currentFont = 0;
         const int FpsFrames = 50;
         private readonly List<long> m_Ftime;
         private readonly Stopwatch m_Stopwatch;
@@ -36,12 +40,11 @@ namespace Gwen.UnitTest.OTK
         private bool m_AltDown = false;
 
         public UnitTestGameWindow()
-            : base(1024, 768, new GraphicsMode(), "Gwen OpenTK Renderer", GameWindowFlags.Default, DisplayDevice.Default, 4, 2, GraphicsContextFlags.Default)
+            : base(new GameWindowSettings(), new NativeWindowSettings())
         //: base(1024, 768)
         {
             KeyDown += Keyboard_KeyDown;
             KeyUp += Keyboard_KeyUp;
-			KeyPress += Keyboard_KeyPress;
             MouseDown += Mouse_ButtonDown;
             MouseUp += Mouse_ButtonUp;
             MouseMove += Mouse_Move;
@@ -51,20 +54,7 @@ namespace Gwen.UnitTest.OTK
             m_Stopwatch = new Stopwatch();
         }
 
-        private void Keyboard_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if(e.KeyChar=='f'){
-				_currentFont = (_currentFont+1)%defaultFonts.Count;
-				//m_Skin.DefaultFont= new Font(m_Renderer, defaultFonts[_currentFont],12);
-				m_Skin.SetDefaultFont(defaultFonts[_currentFont],12);
-				m_Canvas.Redraw();
-			}
-			else if (e.KeyChar=='c'){
-				m_Skin.Colors.ModalBackground = new Color(200,200,200,275);
-			}
-        }
-
-        public override void Dispose()
+        protected override void OnClosed()
         {
             if (m_Canvas != null)
             {
@@ -89,64 +79,80 @@ namespace Gwen.UnitTest.OTK
         /// </summary>
         /// <param name="sender">The KeyboardDevice which generated this event.</param>
         /// <param name="e">The key that was pressed.</param>
-        void Keyboard_KeyDown(object sender, KeyboardKeyEventArgs e)
+        void Keyboard_KeyDown(KeyboardKeyEventArgs e)
         {
-            if (e.Key == global::OpenTK.Input.Key.Escape){
-                Exit();
-			}
-            else if (e.Key == global::OpenTK.Input.Key.AltLeft){
+            if (e.Key == Keys.Escape)
+            {
+                Close();
+            }
+            else if (e.Key == Keys.LeftAlt)
+            {
                 m_AltDown = true;
-			}
-            else if (m_AltDown && e.Key == global::OpenTK.Input.Key.Enter){
-                if (WindowState == WindowState.Fullscreen){
+            }
+            else if (m_AltDown && e.Key == Keys.Enter)
+            {
+                if (WindowState == WindowState.Fullscreen)
+                {
                     WindowState = WindowState.Normal;
-				}
-                else{
+                }
+                else
+                {
                     WindowState = WindowState.Fullscreen;
-				}
-			}
-			
+                }
+            }
+
 
             m_Input.ProcessKeyDown(e);
         }
 
-        void Keyboard_KeyUp(object sender, KeyboardKeyEventArgs e)
+        void Keyboard_KeyUp(KeyboardKeyEventArgs e)
         {
             m_AltDown = false;
+            if (e.Key == Keys.F)
+            {
+                _currentFont = (_currentFont + 1) % defaultFonts.Count;
+                //m_Skin.DefaultFont= new Font(m_Renderer, defaultFonts[_currentFont],12);
+                m_Skin.SetDefaultFont(defaultFonts[_currentFont], 12);
+                m_Canvas.Redraw();
+            }
+            else if (e.Key == Keys.C)
+            {
+                m_Skin.Colors.ModalBackground = new Color(200, 200, 200, 275);
+            }
             m_Input.ProcessKeyUp(e);
         }
 
-        void Mouse_ButtonDown(object sender, MouseButtonEventArgs args)
+        void Mouse_ButtonDown(MouseButtonEventArgs args)
         {
-            m_Input.ProcessMouseMessage(args);
+            m_Input.ProcessMouseDown(args);
         }
 
-        void Mouse_ButtonUp(object sender, MouseButtonEventArgs args)
+        void Mouse_ButtonUp(MouseButtonEventArgs args)
         {
-            m_Input.ProcessMouseMessage(args);
+            m_Input.ProcessMouseUp(args);
         }
 
-        void Mouse_Move(object sender, MouseMoveEventArgs args)
+        void Mouse_Move(MouseMoveEventArgs args)
         {
-            m_Input.ProcessMouseMessage(args);
+            m_Input.ProcessMouseMove(args);
         }
 
-        void Mouse_Wheel(object sender, MouseWheelEventArgs args)
+        void Mouse_Wheel(MouseWheelEventArgs args)
         {
-            m_Input.ProcessMouseMessage(args);
+            m_Input.ProcessMouseWheel(args);
         }
 
         private void GetInstalledFontCollection()
         {
-            
+
             System.Drawing.Text.InstalledFontCollection ifc = new System.Drawing.Text.InstalledFontCollection();
             System.Drawing.FontFamily[] ff = ifc.Families;
 
             foreach (System.Drawing.FontFamily family in ff)
             {
-				string[] nameParts = family.Name.Split(' ');
-				if(nameParts.Length>2)
-					continue;
+                string[] nameParts = family.Name.Split(' ');
+                if (nameParts.Length > 2)
+                    continue;
                 if (family.IsStyleAvailable(System.Drawing.FontStyle.Regular))
                 {
                     System.Drawing.Font f = new System.Drawing.Font(family.Name, 12);
@@ -154,15 +160,14 @@ namespace Gwen.UnitTest.OTK
                     f.Dispose();
                 }
             }
-			
-            
+
+
         }
 
         /// <summary>
         /// Setup OpenGL and load resources here.
         /// </summary>
-        /// <param name="e">Not used.</param>
-        protected override void OnLoad(EventArgs e)
+        protected override void OnLoad()
         {
             GL.ClearColor(Color4.MidnightBlue);
 
@@ -173,19 +178,19 @@ namespace Gwen.UnitTest.OTK
             m_Renderer = new Gwen.Renderer.OpenTK.OpenTKGL40();
 
             m_Skin = new Gwen.Skin.TexturedBase(m_Renderer, "DefaultSkin2.png");
-			m_Skin.Colors.TooltipText = new Color(175,200,200,200);
-			GetInstalledFontCollection();
-            m_Skin.DefaultFont = new Font(m_Renderer, "MonoSpace",12);
+            m_Skin.Colors.TooltipText = new Color(175, 200, 200, 200);
+            GetInstalledFontCollection();
+            m_Skin.DefaultFont = new Font(m_Renderer, "MonoSpace", 12);
             m_Canvas = new Canvas(m_Skin);
             m_Input = new Renderer.OpenTK.Input.OpenTK(this);
             m_Input.Initialize(m_Canvas);
 
-            m_Canvas.SetSize(Width, Height);
+            m_Canvas.SetSize(Size.X, Size.Y);
             m_Canvas.ShouldDrawBackground = true;
             m_Canvas.BackgroundColor = m_Skin.Colors.ModalBackground;
 
-            if (Configuration.RunningOnMacOS)
-                m_Canvas.Scale = 1.5f;
+            //if (Configuration.RunningOnMacOS)
+            //    m_Canvas.Scale = 1.5f;
 
             m_UnitTest = new Gwen.UnitTest.UnitTest(m_Canvas);
 
@@ -198,11 +203,11 @@ namespace Gwen.UnitTest.OTK
         /// </summary>
         /// <param name="e">Contains information on the new GameWindow size.</param>
         /// <remarks>There is no need to call the base implementation.</remarks>
-        protected override void OnResize(EventArgs e)
+        protected override void OnResize(ResizeEventArgs e)
         {
-            m_Renderer.Resize(Width, Height);
+            m_Renderer.Resize(e.Width, e.Height);
 
-            m_Canvas.SetSize(Width, Height);
+            m_Canvas.SetSize(e.Width, e.Height);
         }
 
         /// <summary>
@@ -259,15 +264,13 @@ namespace Gwen.UnitTest.OTK
         [STAThread]
         public static void Main()
         {
-            using (Toolkit.Init())
+            using (UnitTestGameWindow window = new UnitTestGameWindow())
             {
-                using (UnitTestGameWindow window = new UnitTestGameWindow())
-                {
-                    window.Title = "Gwen.net OpenTK Unit Test";
-                    window.VSync = VSyncMode.Off; // to measure performance
-                    window.Run(0.0, 0.0);
-                }
+                window.Title = "Gwen.net OpenTK Unit Test";
+                window.VSync = VSyncMode.Off; // to measure performance
+                window.Run();
             }
+
         }
     }
 }

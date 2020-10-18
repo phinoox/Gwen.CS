@@ -87,7 +87,7 @@ namespace Gwen.Renderer.OpenTK{
 			}
 
 			// Set default values and enable/disable caps.
-			GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+			GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 			GL.Enable(EnableCap.Blend);
 			GL.Disable(EnableCap.DepthTest);
 
@@ -111,7 +111,7 @@ namespace Gwen.Renderer.OpenTK{
 				m_LastTextureID = 0;
 
 				// Restore the previous parameter values.
-				GL.BlendFunc((BlendingFactorSrc)m_PrevBlendSrc, (BlendingFactorDest)m_PrevBlendDst);
+				GL.BlendFunc((BlendingFactor)m_PrevBlendSrc, (BlendingFactor)m_PrevBlendDst);
 
 				if (!m_WasBlendEnabled)
 					GL.Disable(EnableCap.Blend);
